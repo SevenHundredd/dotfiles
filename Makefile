@@ -27,7 +27,6 @@ zsh:
 	@echo "$(YELLOW)→ Checking zsh...$(RESET)"
 	@if [ "$(HAS_ZSH)" = "1" ]; then \
 		echo "$(GREEN)  zsh found: $$(which zsh)$(RESET)"; \
-		chsh -s $$(which zsh) 2>/dev/null || true; \
 	else \
 		echo "$(YELLOW)  zsh not found — install it manually before using the shell$(RESET)"; \
 	fi
