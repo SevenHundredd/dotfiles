@@ -111,8 +111,9 @@ libevent:
 		TMPDIR=$$(mktemp -d) && \
 		curl -fsSL https://github.com/libevent/libevent/releases/download/release-$(LIBEVENT_VER)-stable/libevent-$(LIBEVENT_VER)-stable.tar.gz | tar xz -C $$TMPDIR && \
 		cd $$TMPDIR/libevent-$(LIBEVENT_VER)-stable && \
-		PREFIX=$(LOCAL) ./configure --disable-static --enable-shared 2>/dev/null && \
-		make -j$$(nproc) install && \
+		./configure --prefix=$(LOCAL) --disable-static --enable-shared 2>/dev/null && \
+		make -j$$(nproc) && \
+		make install-libLTLIBRARIES install-includeHEADERS install-include_event2HEADERS install-nodist_include_event2HEADERS install-pkgconfigDATA 2>/dev/null && \
 		cd $(HOME) && rm -rf $$TMPDIR && \
 		echo "$(GREEN)  libevent ready$(RESET)"; \
 	fi
@@ -127,8 +128,10 @@ ncurses:
 		TMPDIR=$$(mktemp -d) && \
 		curl -fsSL https://ftp.gnu.org/gnu/ncurses/ncurses-$(NCURSES_VER).tar.gz | tar xz -C $$TMPDIR && \
 		cd $$TMPDIR/ncurses-$(NCURSES_VER) && \
-		PREFIX=$(LOCAL) ./configure --with-shared --with-termlib --enable-pc-files 2>/dev/null && \
-		make -j$$(nproc) install && \
+		./configure --prefix=$(LOCAL) --with-shared --with-termlib --enable-pc-files 2>/dev/null && \
+		make -j$$(nproc) && \
+		make install.libs install.includes 2>/dev/null && \
+		cp -f $(LOCAL)/include/ncurses/*.h $(LOCAL)/include/ 2>/dev/null; \
 		cd $(HOME) && rm -rf $$TMPDIR && \
 		echo "$(GREEN)  ncurses ready$(RESET)"; \
 	fi
