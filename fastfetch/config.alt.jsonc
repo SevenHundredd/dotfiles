@@ -1,0 +1,57 @@
+// Generated fastfetch config (alternate)
+// Use with: fastfetch -c ~/.config/fastfetch/config.alt.jsonc
+// Palette: deep indigo #5b7cfa | teal #5ec8c2 | amber #f0b429 | slate #94a3b8 | base #e2e8f0
+{
+    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+    "logo": {
+        "type": "auto",
+        "color": {
+            "1": "38;2;91;124;250",
+            "2": "38;2;94;200;194"
+        },
+        "padding": { "top": 1, "right": 3 }
+    },
+
+    "display": {
+        "separator": "  ",
+        "color": {
+            "keys": "38;2;148;163;184",
+            "title": "1;38;2;240;180;41"
+        }
+    },
+
+    "modules": [
+        "break",
+        { "type": "title" },
+        { "type": "separator" },
+
+        { "type": "os",          "key": "\uf17c OS" },
+        { "type": "host",        "key": "\uf108 Host" },
+        { "type": "kernel",      "key": "\uf013 Kernel" },
+        { "type": "uptime",      "key": "\uf017 Uptime" },
+        { "type": "packages",    "key": "\uf187 Packages" },
+        { "type": "shell",       "key": "\uf489 Shell" },
+        { "type": "display",     "key": "\uf26c Display" },
+        { "type": "de",          "key": "\uf108 DE" },
+        { "type": "wm",          "key": "\uf2d2 WM" },
+        { "type": "theme",       "key": "\uf1fc Theme" },
+        { "type": "icons",       "key": "\uf2d2 Icons" },
+        { "type": "font",        "key": "\uf031 Font" },
+        { "type": "cursor",      "key": "\uf1d8 Cursor" },
+        { "type": "terminal",    "key": "\uf2d0 Terminal" },
+        { "type": "editor",      "key": "\uf044 Editor" },
+        { "type": "cpu",         "key": "\uf2db CPU" },
+        { "type": "gpu",         "key": "\uf108 GPU" },
+        { "type": "memory",      "key": "\uf1c0 Memory" },
+        { "type": "swap",        "key": "\uf0e4 Swap" },
+        { "type": "disk",        "folders": "/", "key": "\uf0a0 Disk" },
+        { "type": "localip",     "key": "\uf0ac Local IP" },
+        { "type": "battery",     "key": "\uf240 Battery" },
+        { "type": "locale",      "key": "\uf0ac Locale" },
+        { "type": "date",        "key": "\uf133 Date" },
+
+        { "type": "colors", "paddingLeft": 2, "symbol": "circle" },
+        "break"
+    ]
+}
