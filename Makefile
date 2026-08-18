@@ -21,42 +21,69 @@ all: zsh oh-my-zsh plugins p10k tmux fastfetch cargo myx opencode link
 	@echo "$(GREEN)✔ Setup complete.$(RESET)"
 
 # ── ZSH ──────────────────────────────────────────────────────
+HAS_ZSH := $(shell which zsh > /dev/null 2>&1 && echo 1 || echo 0)
+
 zsh:
 	@echo "$(YELLOW)→ Checking zsh...$(RESET)"
-	@which zsh > /dev/null 2>&1 || { echo "zsh not found — install it first (may need sudo)"; exit 1; }
-	@echo "$(GREEN)  zsh found: $$(which zsh)$(RESET)"
-	@chsh -s $$(which zsh) 2>/dev/null || true
+	@if [ "$(HAS_ZSH)" = "1" ]; then \
+		echo "$(GREEN)  zsh found: $$(which zsh)$(RESET)"; \
+		chsh -s $$(which zsh) 2>/dev/null || true; \
+	else \
+		echo "$(YELLOW)  zsh not found — install it manually before using the shell$(RESET)"; \
+	fi
 
 # ── Oh My Zsh ────────────────────────────────────────────────
-oh-my-zsh:
+oh-my-zsh: zsh
 	@echo "$(YELLOW)→ Installing Oh My Zsh...$(RESET)"
-	@test -d $(HOME)/.oh-my-zsh || sh -c "$$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-	@echo "$(GREEN)  Oh My Zsh ready$(RESET)"
+	@if [ "$(HAS_ZSH)" = "0" ]; then \
+		echo "$(YELLOW)  skipping — zsh not installed$(RESET)"; \
+	elif test -d $(HOME)/.oh-my-zsh; then \
+		echo "$(GREEN)  Oh My Zsh already installed$(RESET)"; \
+	else \
+		sh -c "$$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended; \
+		echo "$(GREEN)  Oh My Zsh ready$(RESET)"; \
+	fi
 
 # ── ZSH Plugins ─────────────────────────────────────────────
 plugins: zsh-autosuggestions zsh-syntax-highlighting zsh-autocomplete
 
-zsh-autosuggestions:
+zsh-autosuggestions: oh-my-zsh
 	@echo "$(YELLOW)→ Installing zsh-autosuggestions...$(RESET)"
-	@test -d $(HOME)/.oh-my-zsh/custom/plugins/zsh-autosuggestions || \
-		git clone https://github.com/zsh-users/zsh-autosuggestions $(HOME)/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+	@if test -d $(HOME)/.oh-my-zsh; then \
+		test -d $(HOME)/.oh-my-zsh/custom/plugins/zsh-autosuggestions || \
+			git clone https://github.com/zsh-users/zsh-autosuggestions $(HOME)/.oh-my-zsh/custom/plugins/zsh-autosuggestions; \
+	else \
+		echo "$(YELLOW)  skipping — Oh My Zsh not installed$(RESET)"; \
+	fi
 
-zsh-syntax-highlighting:
+zsh-syntax-highlighting: oh-my-zsh
 	@echo "$(YELLOW)→ Installing zsh-syntax-highlighting...$(RESET)"
-	@test -d $(HOME)/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting || \
-		git clone https://github.com/zsh-users/zsh-syntax-highlighting $(HOME)/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+	@if test -d $(HOME)/.oh-my-zsh; then \
+		test -d $(HOME)/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting || \
+			git clone https://github.com/zsh-users/zsh-syntax-highlighting $(HOME)/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting; \
+	else \
+		echo "$(YELLOW)  skipping — Oh My Zsh not installed$(RESET)"; \
+	fi
 
-zsh-autocomplete:
+zsh-autocomplete: oh-my-zsh
 	@echo "$(YELLOW)→ Installing zsh-autocomplete...$(RESET)"
-	@test -d $(HOME)/.oh-my-zsh/custom/plugins/zsh-autocomplete || \
-		git clone https://github.com/marlonrichert/zsh-autocomplete $(HOME)/.oh-my-zsh/custom/plugins/zsh-autocomplete
+	@if test -d $(HOME)/.oh-my-zsh; then \
+		test -d $(HOME)/.oh-my-zsh/custom/plugins/zsh-autocomplete || \
+			git clone https://github.com/marlonrichert/zsh-autocomplete $(HOME)/.oh-my-zsh/custom/plugins/zsh-autocomplete; \
+	else \
+		echo "$(YELLOW)  skipping — Oh My Zsh not installed$(RESET)"; \
+	fi
 
 # ── Powerlevel10k ───────────────────────────────────────────
-p10k:
+p10k: oh-my-zsh
 	@echo "$(YELLOW)→ Installing Powerlevel10k...$(RESET)"
-	@test -d $(HOME)/.oh-my-zsh/custom/themes/powerlevel10k || \
-		git clone --depth=1 https://github.com/romkatv/powerlevel10k $(HOME)/.oh-my-zsh/custom/themes/powerlevel10k
-	@echo "$(GREEN)  Powerlevel10k ready$(RESET)"
+	@if test -d $(HOME)/.oh-my-zsh; then \
+		test -d $(HOME)/.oh-my-zsh/custom/themes/powerlevel10k || \
+			git clone --depth=1 https://github.com/romkatv/powerlevel10k $(HOME)/.oh-my-zsh/custom/themes/powerlevel10k; \
+		echo "$(GREEN)  Powerlevel10k ready$(RESET)"; \
+	else \
+		echo "$(YELLOW)  skipping — Oh My Zsh not installed$(RESET)"; \
+	fi
 
 # ── tmux (compiled from source, no sudo) ────────────────────
 tmux:
