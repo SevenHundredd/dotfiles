@@ -15,7 +15,7 @@ GREEN  := \033[1;32m
 YELLOW := \033[1;33m
 RESET  := \033[0m
 
-.PHONY: all zsh oh-my-zsh plugins p10k tmux fastfetch cargo myx opencode link unlink help
+.PHONY: all zsh oh-my-zsh plugins p10k tmux libevent ncurses tpm fastfetch cargo myx opencode link unlink help
 
 all: zsh oh-my-zsh plugins p10k tmux fastfetch cargo myx opencode link
 	@echo "$(GREEN)✔ Setup complete.$(RESET)"
@@ -85,20 +85,52 @@ p10k: oh-my-zsh
 	fi
 
 # ── tmux (compiled from source, no sudo) ────────────────────
-tmux:
+tmux: libevent ncurses
 	@echo "$(YELLOW)→ Checking tmux...$(RESET)"
 	@if which tmux > /dev/null 2>&1 && [ "$$(tmux -V)" = "tmux $(TMUX_VERSION)" ]; then \
 		echo "$(GREEN)  tmux $(TMUX_VERSION) already installed$(RESET)"; \
 	else \
 		echo "$(YELLOW)  Building tmux $(TMUX_VERSION) from source...$(RESET)"; \
 		TMPDIR=$$(mktemp -d) && \
-		cd $$TMPDIR && \
-		curl -fsSL https://github.com/tmux/tmux/releases/download/$(TMUX_VERSION)/tmux-$(TMUX_VERSION).tar.gz | tar xz && \
-		cd tmux-$(TMUX_VERSION) && \
-		PREFIX=$(LOCAL) ./configure --no-install-create 2>/dev/null && \
+		curl -fsSL https://github.com/tmux/tmux/releases/download/$(TMUX_VERSION)/tmux-$(TMUX_VERSION).tar.gz | tar xz -C $$TMPDIR && \
+		cd $$TMPDIR/tmux-$(TMUX_VERSION) && \
+		PREFIX=$(LOCAL) CFLAGS="-I$(LOCAL)/include" LDFLAGS="-L$(LOCAL)/lib -Wl,-rpath,$(LOCAL)/lib" \
+			./configure --no-install-create 2>/dev/null && \
 		make -j$$(nproc) install && \
 		cd $(HOME) && rm -rf $$TMPDIR && \
 		echo "$(GREEN)  tmux $(TMUX_VERSION) installed to $(BIN)$(RESET)"; \
+	fi
+
+# ── libevent (for tmux, no sudo) ────────────────────────────
+LIBEVENT_VER := 2.1.12
+libevent:
+	@if test -f $(LOCAL)/lib/libevent.so; then \
+		echo "$(GREEN)  libevent already built$(RESET)"; \
+	else \
+		echo "$(YELLOW)  Building libevent $(LIBEVENT_VER)...$(RESET)"; \
+		TMPDIR=$$(mktemp -d) && \
+		curl -fsSL https://github.com/libevent/libevent/releases/download/release-$(LIBEVENT_VER)-stable/libevent-$(LIBEVENT_VER)-stable.tar.gz | tar xz -C $$TMPDIR && \
+		cd $$TMPDIR/libevent-$(LIBEVENT_VER)-stable && \
+		PREFIX=$(LOCAL) ./configure --disable-static --enable-shared 2>/dev/null && \
+		make -j$$(nproc) install && \
+		cd $(HOME) && rm -rf $$TMPDIR && \
+		echo "$(GREEN)  libevent ready$(RESET)"; \
+	fi
+
+# ── ncurses (for tmux, no sudo) ─────────────────────────────
+NCURSES_VER := 6.4
+ncurses:
+	@if test -f $(LOCAL)/lib/libncurses.so; then \
+		echo "$(GREEN)  ncurses already built$(RESET)"; \
+	else \
+		echo "$(YELLOW)  Building ncurses $(NCURSES_VER)...$(RESET)"; \
+		TMPDIR=$$(mktemp -d) && \
+		curl -fsSL https://ftp.gnu.org/gnu/ncurses/ncurses-$(NCURSES_VER).tar.gz | tar xz -C $$TMPDIR && \
+		cd $$TMPDIR/ncurses-$(NCURSES_VER) && \
+		PREFIX=$(LOCAL) ./configure --with-shared --with-termlib --enable-pc-files 2>/dev/null && \
+		make -j$$(nproc) install && \
+		cd $(HOME) && rm -rf $$TMPDIR && \
+		echo "$(GREEN)  ncurses ready$(RESET)"; \
 	fi
 
 # ── TPM (tmux plugin manager) ───────────────────────────────

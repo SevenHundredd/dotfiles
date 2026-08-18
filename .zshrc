@@ -1,4 +1,5 @@
 export PATH="$HOME/.local/bin:$PATH"
+export LD_LIBRARY_PATH="$HOME/.local/lib:${LD_LIBRARY_PATH}"
 ZSH_TMUX_AUTOSTART=true
 source $ZSH/oh-my-zsh.sh
 
