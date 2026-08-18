@@ -94,9 +94,9 @@ tmux: libevent ncurses
 		TMPDIR=$$(mktemp -d) && \
 		curl -fsSL https://github.com/tmux/tmux/releases/download/$(TMUX_VERSION)/tmux-$(TMUX_VERSION).tar.gz | tar xz -C $$TMPDIR && \
 		cd $$TMPDIR/tmux-$(TMUX_VERSION) && \
-		./configure --prefix=$(LOCAL) CFLAGS="-I$(LOCAL)/include" LDFLAGS="-L$(LOCAL)/lib -Wl,-rpath,$(LOCAL)/lib" 2>/dev/null && \
+		./configure --prefix=$(LOCAL) CFLAGS="-I$(LOCAL)/include" LDFLAGS="-L$(LOCAL)/lib -Wl,-rpath,$(LOCAL)/lib" && \
 		make -j$$(nproc) && \
-		make install 2>/dev/null && \
+		make install && \
 		cd $(HOME) && rm -rf $$TMPDIR && \
 		echo "$(GREEN)  tmux $(TMUX_VERSION) installed to $(BIN)$(RESET)"; \
 	fi
