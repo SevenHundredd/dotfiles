@@ -2,8 +2,11 @@
 while true; do
     clear
     fastfetch
-    verse=$(curl -s "https://labs.bible.org/api/?passage=random&formatting=plain" 2>/dev/null | head -c 80)
+    verse=$(curl -s "https://labs.bible.org/api/?passage=random&formatting=plain" 2>/dev/null)
     if [ -n "$verse" ]; then
+        cols=$(tput cols)
+        max=$((cols - 6))
+        verse=$(echo "$verse" | fold -s -w $max | head -1)
         len=${#verse}
         width=$((len + 4))
         border=""
