@@ -39,6 +39,7 @@
         { "type": "terminal", "key": "\u001b[38;2;199;190;177m\u251c \uf2d0  Term\u001b[0m" },
         { "type": "editor",   "key": "\u001b[38;2;199;190;177m\u251c \uf044  Editor\u001b[0m" },
         { "type": "command", "key": "\u001b[38;2;199;190;177m\u2514 \uf001  Now\u001b[0m", "text": "bash ~/dotfiles/fastfetch/now-playing.sh" },
+        { "type": "command", "key": "\u001b[38;2;199;190;177m\u2514 \uf29c  Ver\u001b[0m", "text": "bash ~/dotfiles/fastfetch/bible-verse.sh" },
         "break",
 
         { "type": "custom", "format": "\u001b[38;2;179;156;137m\u2500\u2500\u2500\u2500\u2500 Session \u2500\u2500\u2500\u2500\u2500\u001b[0m" },
