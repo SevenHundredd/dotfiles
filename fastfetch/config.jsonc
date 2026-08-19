@@ -37,7 +37,8 @@
         { "type": "packages", "key": "\u001b[38;2;199;190;177m\u251c \uf187  Pkgs\u001b[0m" },
         { "type": "shell",    "key": "\u001b[38;2;199;190;177m\u251c \uf489  Shell\u001b[0m" },
         { "type": "terminal", "key": "\u001b[38;2;199;190;177m\u251c \uf2d0  Term\u001b[0m" },
-        { "type": "editor",   "key": "\u001b[38;2;199;190;177m\u2514 \uf044  Editor\u001b[0m" },
+        { "type": "editor",   "key": "\u001b[38;2;199;190;177m\u251c \uf044  Editor\u001b[0m" },
+        { "type": "command", "key": "\u001b[38;2;199;190;177m\u2514 \uf001  Now\u001b[0m", "text": "bash ~/dotfiles/fastfetch/now-playing.sh" },
         "break",
 
         { "type": "custom", "format": "\u001b[38;2;179;156;137m\u2500\u2500\u2500\u2500\u2500 Session \u2500\u2500\u2500\u2500\u2500\u001b[0m" },
