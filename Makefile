@@ -115,8 +115,8 @@ cargo:
 myx: cargo
 	@echo "$(YELLOW)→ Installing myx...$(RESET)"
 	@rm -f $(HOME)/.cargo/bin/myx
-	@if [ -f $(HOME)/.cargo/env ]; then \
-		. $(HOME)/.cargo/env && cargo install myx; \
+	@if [ -x $(HOME)/.cargo/bin/cargo ]; then \
+		$(HOME)/.cargo/bin/cargo install myx; \
 	elif command -v cargo > /dev/null 2>&1; then \
 		cargo install myx; \
 	else \
