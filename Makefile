@@ -7,7 +7,6 @@ ARCH     := $(shell uname -m)
 OS       := $(shell uname -s)
 
 # ── Versions ─────────────────────────────────────────────────
-TMUX_VERSION    := 3.7
 FASTFETCH_VER   := 2.67.1
 
 # ── Colors ───────────────────────────────────────────────────
@@ -15,9 +14,9 @@ GREEN  := \033[1;32m
 YELLOW := \033[1;33m
 RESET  := \033[0m
 
-.PHONY: all zsh oh-my-zsh plugins p10k tmux libevent ncurses tpm fastfetch cargo myx opencode link unlink help
+.PHONY: all zsh oh-my-zsh plugins p10k tmux tpm fastfetch cargo myx opencode link unlink help
 
-all: zsh oh-my-zsh plugins p10k tmux fastfetch cargo myx opencode link
+all: zsh oh-my-zsh plugins p10k tmux tpm fastfetch cargo myx opencode link
 	@echo "$(GREEN)✔ Setup complete.$(RESET)"
 
 # ── ZSH ──────────────────────────────────────────────────────
@@ -84,28 +83,31 @@ p10k: oh-my-zsh
 		echo "$(YELLOW)  skipping — Oh My Zsh not installed$(RESET)"; \
 	fi
 
-# ── tmux (compiled from source, no sudo) ────────────────────
-tmux: libevent ncurses
+# ── tmux (use system if available, build from source if not) ──
+tmux:
 	@echo "$(YELLOW)→ Checking tmux...$(RESET)"
-	@if which tmux > /dev/null 2>&1 && [ "$$(tmux -V)" = "tmux $(TMUX_VERSION)" ]; then \
-		echo "$(GREEN)  tmux $(TMUX_VERSION) already installed$(RESET)"; \
+	@if which tmux > /dev/null 2>&1; then \
+		echo "$(GREEN)  tmux found: $$(tmux -V)$(RESET)"; \
 	else \
-		echo "$(YELLOW)  Building tmux $(TMUX_VERSION) from source...$(RESET)"; \
-		TMPDIR=$$(mktemp -d) && \
-		curl -fsSL https://github.com/tmux/tmux/releases/download/$(TMUX_VERSION)/tmux-$(TMUX_VERSION).tar.gz | tar xz -C $$TMPDIR && \
-		cd $$TMPDIR/tmux-$(TMUX_VERSION) && \
-		./configure --prefix=$(LOCAL) CFLAGS="-I$(LOCAL)/include" LDFLAGS="-L$(LOCAL)/lib -Wl,-rpath,$(LOCAL)/lib" && \
-		make -j$$(nproc) && \
-		make install && \
-		cd $(HOME) && rm -rf $$TMPDIR && \
-		echo "$(GREEN)  tmux $(TMUX_VERSION) installed to $(BIN)$(RESET)"; \
+		echo "$(YELLOW)  Building tmux from source...$(RESET)"; \
+		$(MAKE) _build-tmux; \
 	fi
+
+_build-tmux: _build-libevent _build-ncurses
+	TMPDIR=$$(mktemp -d) && \
+	curl -fsSL https://github.com/tmux/tmux/releases/download/3.7/tmux-3.7.tar.gz | tar xz -C $$TMPDIR && \
+	cd $$TMPDIR/tmux-3.7 && \
+	./configure --prefix=$(LOCAL) CFLAGS="-I$(LOCAL)/include" LDFLAGS="-L$(LOCAL)/lib -Wl,-rpath,$(LOCAL)/lib" && \
+	make -j$$(nproc) && \
+	make install && \
+	cd $(HOME) && rm -rf $$TMPDIR && \
+	echo "$(GREEN)  tmux installed to $(BIN)$(RESET)"
 
 # ── libevent (for tmux, no sudo) ────────────────────────────
 LIBEVENT_VER := 2.1.12
-libevent:
-	@if test -f $(LOCAL)/lib/libevent.so; then \
-		echo "$(GREEN)  libevent already built$(RESET)"; \
+_build-libevent:
+	@if test -f $(LOCAL)/lib/libevent.so || ldconfig -p 2>/dev/null | grep -q libevent; then \
+		echo "$(GREEN)  libevent already available$(RESET)"; \
 	else \
 		echo "$(YELLOW)  Building libevent $(LIBEVENT_VER)...$(RESET)"; \
 		TMPDIR=$$(mktemp -d) && \
@@ -120,9 +122,9 @@ libevent:
 
 # ── ncurses (for tmux, no sudo) ─────────────────────────────
 NCURSES_VER := 6.4
-ncurses:
-	@if test -f $(LOCAL)/lib/libncurses.so; then \
-		echo "$(GREEN)  ncurses already built$(RESET)"; \
+_build-ncurses:
+	@if test -f $(LOCAL)/lib/libncurses.so || ldconfig -p 2>/dev/null | grep -q libncurses; then \
+		echo "$(GREEN)  ncurses already available$(RESET)"; \
 	else \
 		echo "$(YELLOW)  Building ncurses $(NCURSES_VER)...$(RESET)"; \
 		TMPDIR=$$(mktemp -d) && \
@@ -146,10 +148,11 @@ tpm:
 # ── fastfetch (pre-built binary) ────────────────────────────
 fastfetch:
 	@echo "$(YELLOW)→ Checking fastfetch...$(RESET)"
-	@if which fastfetch > /dev/null 2>&1 && [ "$$(fastfetch --version 2>&1 | head -1)" = "fastfetch $(FASTFETCH_VER)" ]; then \
-		echo "$(GREEN)  fastfetch $(FASTFETCH_VER) already installed$(RESET)"; \
+	@if which fastfetch > /dev/null 2>&1; then \
+		echo "$(GREEN)  fastfetch found: $$(which fastfetch)$(RESET)"; \
 	else \
 		echo "$(YELLOW)  Downloading fastfetch $(FASTFETCH_VER)...$(RESET)"; \
+		mkdir -p $(BIN) && \
 		TMPDIR=$$(mktemp -d) && \
 		if [ "$(OS)" = "Linux" ]; then \
 			curl -fsSL "https://github.com/fastfetch-cli/fastfetch/releases/download/$(FASTFETCH_VER)/fastfetch-linux-amd64.tar.gz" \
@@ -181,8 +184,12 @@ cargo:
 # ── myx (via cargo) ─────────────────────────────────────────
 myx: cargo
 	@echo "$(YELLOW)→ Installing myx...$(RESET)"
-	@. $(HOME)/.cargo/env && cargo install myx 2>/dev/null || echo "$(GREEN)  myx already installed$(RESET)"
-	@echo "$(GREEN)  myx ready$(RESET)"
+	@. $(HOME)/.cargo/env 2>/dev/null; \
+	if which myx > /dev/null 2>&1; then \
+		echo "$(GREEN)  myx already installed$(RESET)"; \
+	else \
+		cargo install myx 2>&1 && echo "$(GREEN)  myx ready$(RESET)" || echo "$(YELLOW)  myx install skipped$(RESET)"; \
+	fi
 
 # ── opencode ────────────────────────────────────────────────
 opencode:
@@ -228,7 +235,7 @@ help:
 	@echo "  oh-my-zsh  Install Oh My Zsh"
 	@echo "  plugins    Install zsh plugins"
 	@echo "  p10k       Install Powerlevel10k"
-	@echo "  tmux       Build tmux from source (no sudo)"
+	@echo "  tmux       Check/install tmux"
 	@echo "  tpm        Install tmux plugin manager"
 	@echo "  fastfetch  Install fastfetch binary"
 	@echo "  cargo      Install Rust toolchain"

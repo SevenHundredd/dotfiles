@@ -48,7 +48,25 @@
         {
             "type": "colors",
             "paddingLeft": 2,
-            "symbol": "circle"
+            "symbol": "circle",
+            "colors": [
+                "#2e2c31",  // charcoal
+                "#464449",  // dark charcoal
+                "#777070",  // greige dark
+                "#94897b",  // taupe dark
+                "#b39c89",  // taupe
+                "#c7beb1",  // greige
+                "#d6d6d4",  // light gray
+                "#e8e4dd",  // cream
+                "#e5c9c0",  // blush
+                "#e8d4c9",  // light blush
+                "#e8e4dd",  // cream
+                "#f0ebe4",  // light cream
+                "#e8e4dd",  // cream
+                "#e8e4dd",  // cream
+                "#e8e4dd",  // cream
+                "#e8e4dd"   // cream
+            ]
         }
     ]
 }
