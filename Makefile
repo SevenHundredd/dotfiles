@@ -14,9 +14,9 @@ GREEN  := \033[1;32m
 YELLOW := \033[1;33m
 RESET  := \033[0m
 
-.PHONY: all zsh oh-my-zsh plugins p10k tmux tpm fastfetch cargo myx opencode link unlink help
+.PHONY: all zsh oh-my-zsh plugins p10k tpm fastfetch cargo myx opencode link unlink help
 
-all: zsh oh-my-zsh plugins p10k tmux tpm fastfetch cargo myx opencode link
+all: zsh oh-my-zsh plugins p10k tpm fastfetch cargo myx opencode link
 	@echo "$(GREEN)✔ Setup complete.$(RESET)"
 
 # ── ZSH ──────────────────────────────────────────────────────
@@ -47,105 +47,34 @@ plugins: zsh-autosuggestions zsh-syntax-highlighting zsh-autocomplete
 
 zsh-autosuggestions: oh-my-zsh
 	@echo "$(YELLOW)→ Installing zsh-autosuggestions...$(RESET)"
-	@if test -d $(HOME)/.oh-my-zsh; then \
-		test -d $(HOME)/.oh-my-zsh/custom/plugins/zsh-autosuggestions || \
-			git clone https://github.com/zsh-users/zsh-autosuggestions $(HOME)/.oh-my-zsh/custom/plugins/zsh-autosuggestions; \
-	else \
-		echo "$(YELLOW)  skipping — Oh My Zsh not installed$(RESET)"; \
-	fi
+	@test -d $(HOME)/.oh-my-zsh/custom/plugins/zsh-autosuggestions || \
+		git clone https://github.com/zsh-users/zsh-autosuggestions $(HOME)/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 
 zsh-syntax-highlighting: oh-my-zsh
 	@echo "$(YELLOW)→ Installing zsh-syntax-highlighting...$(RESET)"
-	@if test -d $(HOME)/.oh-my-zsh; then \
-		test -d $(HOME)/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting || \
-			git clone https://github.com/zsh-users/zsh-syntax-highlighting $(HOME)/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting; \
-	else \
-		echo "$(YELLOW)  skipping — Oh My Zsh not installed$(RESET)"; \
-	fi
+	@test -d $(HOME)/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting || \
+		git clone https://github.com/zsh-users/zsh-syntax-highlighting $(HOME)/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 
 zsh-autocomplete: oh-my-zsh
 	@echo "$(YELLOW)→ Installing zsh-autocomplete...$(RESET)"
-	@if test -d $(HOME)/.oh-my-zsh; then \
-		test -d $(HOME)/.oh-my-zsh/custom/plugins/zsh-autocomplete || \
-			git clone https://github.com/marlonrichert/zsh-autocomplete $(HOME)/.oh-my-zsh/custom/plugins/zsh-autocomplete; \
-	else \
-		echo "$(YELLOW)  skipping — Oh My Zsh not installed$(RESET)"; \
-	fi
+	@test -d $(HOME)/.oh-my-zsh/custom/plugins/zsh-autocomplete || \
+		git clone https://github.com/marlonrichert/zsh-autocomplete $(HOME)/.oh-my-zsh/custom/plugins/zsh-autocomplete
 
 # ── Powerlevel10k ───────────────────────────────────────────
 p10k: oh-my-zsh
 	@echo "$(YELLOW)→ Installing Powerlevel10k...$(RESET)"
-	@if test -d $(HOME)/.oh-my-zsh; then \
-		test -d $(HOME)/.oh-my-zsh/custom/themes/powerlevel10k || \
-			git clone --depth=1 https://github.com/romkatv/powerlevel10k $(HOME)/.oh-my-zsh/custom/themes/powerlevel10k; \
-		echo "$(GREEN)  Powerlevel10k ready$(RESET)"; \
-	else \
-		echo "$(YELLOW)  skipping — Oh My Zsh not installed$(RESET)"; \
-	fi
-
-# ── tmux (use system if available, build from source if not) ──
-tmux:
-	@echo "$(YELLOW)→ Checking tmux...$(RESET)"
-	@if which tmux > /dev/null 2>&1; then \
-		echo "$(GREEN)  tmux found: $$(tmux -V)$(RESET)"; \
-	else \
-		echo "$(YELLOW)  Building tmux from source...$(RESET)"; \
-		$(MAKE) _build-tmux; \
-	fi
-
-_build-tmux: _build-libevent _build-ncurses
-	TMPDIR=$$(mktemp -d) && \
-	curl -fsSL https://github.com/tmux/tmux/releases/download/3.7/tmux-3.7.tar.gz | tar xz -C $$TMPDIR && \
-	cd $$TMPDIR/tmux-3.7 && \
-	./configure --prefix=$(LOCAL) CFLAGS="-I$(LOCAL)/include" LDFLAGS="-L$(LOCAL)/lib -Wl,-rpath,$(LOCAL)/lib" && \
-	make -j$$(nproc) && \
-	make install && \
-	cd $(HOME) && rm -rf $$TMPDIR && \
-	echo "$(GREEN)  tmux installed to $(BIN)$(RESET)"
-
-# ── libevent (for tmux, no sudo) ────────────────────────────
-LIBEVENT_VER := 2.1.12
-_build-libevent:
-	@if test -f $(LOCAL)/lib/libevent.so || ldconfig -p 2>/dev/null | grep -q libevent; then \
-		echo "$(GREEN)  libevent already available$(RESET)"; \
-	else \
-		echo "$(YELLOW)  Building libevent $(LIBEVENT_VER)...$(RESET)"; \
-		TMPDIR=$$(mktemp -d) && \
-		curl -fsSL https://github.com/libevent/libevent/releases/download/release-$(LIBEVENT_VER)-stable/libevent-$(LIBEVENT_VER)-stable.tar.gz | tar xz -C $$TMPDIR && \
-		cd $$TMPDIR/libevent-$(LIBEVENT_VER)-stable && \
-		./configure --prefix=$(LOCAL) --disable-static --enable-shared 2>/dev/null && \
-		make -j$$(nproc) && \
-		make install-libLTLIBRARIES install-includeHEADERS install-include_event2HEADERS install-nodist_include_event2HEADERS install-pkgconfigDATA 2>/dev/null && \
-		cd $(HOME) && rm -rf $$TMPDIR && \
-		echo "$(GREEN)  libevent ready$(RESET)"; \
-	fi
-
-# ── ncurses (for tmux, no sudo) ─────────────────────────────
-NCURSES_VER := 6.4
-_build-ncurses:
-	@if test -f $(LOCAL)/lib/libncurses.so || ldconfig -p 2>/dev/null | grep -q libncurses; then \
-		echo "$(GREEN)  ncurses already available$(RESET)"; \
-	else \
-		echo "$(YELLOW)  Building ncurses $(NCURSES_VER)...$(RESET)"; \
-		TMPDIR=$$(mktemp -d) && \
-		curl -fsSL https://ftp.gnu.org/gnu/ncurses/ncurses-$(NCURSES_VER).tar.gz | tar xz -C $$TMPDIR && \
-		cd $$TMPDIR/ncurses-$(NCURSES_VER) && \
-		./configure --prefix=$(LOCAL) --with-shared --with-termlib --enable-pc-files 2>/dev/null && \
-		make -j$$(nproc) && \
-		make install.libs install.includes 2>/dev/null && \
-		cp -f $(LOCAL)/include/ncurses/*.h $(LOCAL)/include/ 2>/dev/null; \
-		cd $(HOME) && rm -rf $$TMPDIR && \
-		echo "$(GREEN)  ncurses ready$(RESET)"; \
-	fi
+	@test -d $(HOME)/.oh-my-zsh/custom/themes/powerlevel10k || \
+		git clone --depth=1 https://github.com/romkatv/powerlevel10k $(HOME)/.oh-my-zsh/custom/themes/powerlevel10k
+	@echo "$(GREEN)  Powerlevel10k ready$(RESET)"
 
 # ── TPM (tmux plugin manager) ───────────────────────────────
 tpm:
 	@echo "$(YELLOW)→ Installing TPM...$(RESET)"
 	@test -d $(HOME)/.tmux/plugins/tpm || \
 		git clone https://github.com/tmux-plugins/tpm $(HOME)/.tmux/plugins/tpm
-	@echo "$(GREEN)  TPM ready — run prefix + I inside tmux to install plugins$(RESET)"
+	@echo "$(GREEN)  TPM ready$(RESET)"
 
-# ── fastfetch (pre-built binary) ────────────────────────────
+# ── fastfetch (pre-built binary to ~/.local) ────────────────
 fastfetch:
 	@echo "$(YELLOW)→ Checking fastfetch...$(RESET)"
 	@if which fastfetch > /dev/null 2>&1; then \
@@ -235,7 +164,6 @@ help:
 	@echo "  oh-my-zsh  Install Oh My Zsh"
 	@echo "  plugins    Install zsh plugins"
 	@echo "  p10k       Install Powerlevel10k"
-	@echo "  tmux       Check/install tmux"
 	@echo "  tpm        Install tmux plugin manager"
 	@echo "  fastfetch  Install fastfetch binary"
 	@echo "  cargo      Install Rust toolchain"
