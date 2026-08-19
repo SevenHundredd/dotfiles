@@ -14,9 +14,9 @@ GREEN  := \033[1;32m
 YELLOW := \033[1;33m
 RESET  := \033[0m
 
-.PHONY: all zsh oh-my-zsh plugins p10k tpm fastfetch cargo myx opencode link unlink help
+.PHONY: all zsh oh-my-zsh plugins p10k tpm fastfetch cargo myx opencode link unlink move-cargo help
 
-all: zsh oh-my-zsh plugins p10k tpm fastfetch cargo myx opencode link
+all: zsh oh-my-zsh plugins p10k tpm fastfetch cargo myx opencode link move-cargo
 	@echo "$(GREEN)✔ Setup complete.$(RESET)"
 
 # ── ZSH ──────────────────────────────────────────────────────
@@ -92,6 +92,8 @@ fastfetch:
 	@echo "$(GREEN)  fastfetch installed to $(BIN)$(RESET)"
 
 # ── Rust / Cargo ────────────────────────────────────────────
+CARGO_DIR := /goinfre/$(shell whoami)
+
 cargo:
 	@echo "$(YELLOW)→ Checking cargo...$(RESET)"
 	@if which cargo > /dev/null 2>&1; then \
@@ -100,15 +102,6 @@ cargo:
 		echo "$(YELLOW)  Installing Rust via rustup...$(RESET)"; \
 		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path; \
 		echo "$(GREEN)  Rust installed$(RESET)"; \
-	fi
-	@if [ ! -L $(HOME)/.cargo ] && [ -d $(HOME)/.cargo ]; then \
-		echo "$(YELLOW)  Moving cargo/rustup to goinfre...$(RESET)"; \
-		mkdir -p /goinfre/sterandr; \
-		mv $(HOME)/.cargo /goinfre/sterandr/; \
-		mv $(HOME)/.rustup /goinfre/sterandr/; \
-		ln -s /goinfre/sterandr/.cargo $(HOME)/.cargo; \
-		ln -s /goinfre/sterandr/.rustup $(HOME)/.rustup; \
-		echo "$(GREEN)  Moved to goinfre with symlinks$(RESET)"; \
 	fi
 
 # ── myx (via cargo) ─────────────────────────────────────────
@@ -124,6 +117,20 @@ myx: cargo
 		exit 1; \
 	fi
 	@echo "$(GREEN)  myx ready$(RESET)"
+
+# ── Move cargo to goinfre (runs last) ───────────────────────
+move-cargo:
+	@echo "$(YELLOW)→ Moving cargo/rustup to goinfre...$(RESET)"
+	@if [ ! -L $(HOME)/.cargo ] && [ -d $(HOME)/.cargo ]; then \
+		mkdir -p $(CARGO_DIR); \
+		mv $(HOME)/.cargo $(CARGO_DIR)/; \
+		mv $(HOME)/.rustup $(CARGO_DIR)/ 2>/dev/null || true; \
+		ln -s $(CARGO_DIR)/.cargo $(HOME)/.cargo; \
+		ln -s $(CARGO_DIR)/.rustup $(HOME)/.rustup; \
+		echo "$(GREEN)  Moved to goinfre with symlinks$(RESET)"; \
+	else \
+		echo "$(GREEN)  cargo already in goinfre or symlinked$(RESET)"; \
+	fi
 
 # ── opencode ────────────────────────────────────────────────
 opencode:
@@ -174,3 +181,4 @@ help:
 	@echo "  opencode   Install opencode"
 	@echo "  link       Symlink all config files to ~"
 	@echo "  unlink     Remove symlinks"
+	@echo "  move-cargo Move cargo/rustup to goinfre"
