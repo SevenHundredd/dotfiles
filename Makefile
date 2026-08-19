@@ -30,55 +30,52 @@ zsh:
 
 # ── Oh My Zsh ────────────────────────────────────────────────
 oh-my-zsh:
-	@echo "$(YELLOW)→ Checking Oh My Zsh...$(RESET)"
-	@test -d $(HOME)/.oh-my-zsh && echo "$(GREEN)  Oh My Zsh already installed$(RESET)" || \
-		(sh -c "$$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended && \
-		echo "$(GREEN)  Oh My Zsh ready$(RESET)")
+	@echo "$(YELLOW)→ Installing Oh My Zsh...$(RESET)"
+	@rm -rf $(HOME)/.oh-my-zsh
+	@sh -c "$$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+	@echo "$(GREEN)  Oh My Zsh ready$(RESET)"
 
 # ── ZSH Plugins ─────────────────────────────────────────────
 plugins: zsh-autosuggestions zsh-syntax-highlighting zsh-autocomplete
 
 zsh-autosuggestions:
-	@echo "$(YELLOW)→ Checking zsh-autosuggestions...$(RESET)"
-	@test -d $(HOME)/.oh-my-zsh/custom/plugins/zsh-autosuggestions && echo "$(GREEN)  already installed$(RESET)" || \
-		(git clone https://github.com/zsh-users/zsh-autosuggestions $(HOME)/.oh-my-zsh/custom/plugins/zsh-autosuggestions && \
-		echo "$(GREEN)  ready$(RESET)")
+	@echo "$(YELLOW)→ Installing zsh-autosuggestions...$(RESET)"
+	@rm -rf $(HOME)/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+	@git clone https://github.com/zsh-users/zsh-autosuggestions $(HOME)/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+	@echo "$(GREEN)  ready$(RESET)"
 
 zsh-syntax-highlighting:
-	@echo "$(YELLOW)→ Checking zsh-syntax-highlighting...$(RESET)"
-	@test -d $(HOME)/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting && echo "$(GREEN)  already installed$(RESET)" || \
-		(git clone https://github.com/zsh-users/zsh-syntax-highlighting $(HOME)/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting && \
-		echo "$(GREEN)  ready$(RESET)")
+	@echo "$(YELLOW)→ Installing zsh-syntax-highlighting...$(RESET)"
+	@rm -rf $(HOME)/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+	@git clone https://github.com/zsh-users/zsh-syntax-highlighting $(HOME)/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+	@echo "$(GREEN)  ready$(RESET)"
 
 zsh-autocomplete:
-	@echo "$(YELLOW)→ Checking zsh-autocomplete...$(RESET)"
-	@test -d $(HOME)/.oh-my-zsh/custom/plugins/zsh-autocomplete && echo "$(GREEN)  already installed$(RESET)" || \
-		(git clone https://github.com/marlonrichert/zsh-autocomplete $(HOME)/.oh-my-zsh/custom/plugins/zsh-autocomplete && \
-		echo "$(GREEN)  ready$(RESET)")
+	@echo "$(YELLOW)→ Installing zsh-autocomplete...$(RESET)"
+	@rm -rf $(HOME)/.oh-my-zsh/custom/plugins/zsh-autocomplete
+	@git clone https://github.com/marlonrichert/zsh-autocomplete $(HOME)/.oh-my-zsh/custom/plugins/zsh-autocomplete
+	@echo "$(GREEN)  ready$(RESET)"
 
 # ── Powerlevel10k ───────────────────────────────────────────
 p10k:
-	@echo "$(YELLOW)→ Checking Powerlevel10k...$(RESET)"
-	@test -d $(HOME)/.oh-my-zsh/custom/themes/powerlevel10k && echo "$(GREEN)  already installed$(RESET)" || \
-		(git clone --depth=1 https://github.com/romkatv/powerlevel10k $(HOME)/.oh-my-zsh/custom/themes/powerlevel10k && \
-		echo "$(GREEN)  ready$(RESET)")
+	@echo "$(YELLOW)→ Installing Powerlevel10k...$(RESET)"
+	@rm -rf $(HOME)/.oh-my-zsh/custom/themes/powerlevel10k
+	@git clone --depth=1 https://github.com/romkatv/powerlevel10k $(HOME)/.oh-my-zsh/custom/themes/powerlevel10k
+	@echo "$(GREEN)  ready$(RESET)"
 
 # ── TPM (tmux plugin manager) ───────────────────────────────
 tpm:
-	@echo "$(YELLOW)→ Checking TPM...$(RESET)"
-	@test -d $(HOME)/.tmux/plugins/tpm && echo "$(GREEN)  already installed$(RESET)" || \
-		(git clone https://github.com/tmux-plugins/tpm $(HOME)/.tmux/plugins/tpm && \
-		echo "$(GREEN)  ready$(RESET)")
+	@echo "$(YELLOW)→ Installing TPM...$(RESET)"
+	@rm -rf $(HOME)/.tmux/plugins/tpm
+	@git clone https://github.com/tmux-plugins/tpm $(HOME)/.tmux/plugins/tpm
+	@echo "$(GREEN)  ready$(RESET)"
 
 # ── fastfetch (pre-built binary to ~/.local) ────────────────
 fastfetch:
-	@echo "$(YELLOW)→ Checking fastfetch...$(RESET)"
-	@if which fastfetch > /dev/null 2>&1; then \
-		echo "$(GREEN)  fastfetch found: $$(which fastfetch)$(RESET)"; \
-	else \
-		echo "$(YELLOW)  Downloading fastfetch $(FASTFETCH_VER)...$(RESET)"; \
-		mkdir -p $(BIN) && \
-		TMPDIR=$$(mktemp -d) && \
+	@echo "$(YELLOW)→ Installing fastfetch $(FASTFETCH_VER)...$(RESET)"
+	@rm -f $(BIN)/fastfetch
+	@mkdir -p $(BIN)
+	@TMPDIR=$$(mktemp -d) && \
 		if [ "$(OS)" = "Linux" ]; then \
 			curl -fsSL "https://github.com/fastfetch-cli/fastfetch/releases/download/$(FASTFETCH_VER)/fastfetch-linux-amd64.tar.gz" \
 				-o $$TMPDIR/ff.tar.gz && \
@@ -91,9 +88,8 @@ fastfetch:
 			cp $$TMPDIR/fastfetch-macos-amd64/usr/bin/fastfetch $(BIN)/fastfetch; \
 		fi && \
 		chmod +x $(BIN)/fastfetch && \
-		rm -rf $$TMPDIR && \
-		echo "$(GREEN)  fastfetch installed to $(BIN)$(RESET)"; \
-	fi
+		rm -rf $$TMPDIR
+	@echo "$(GREEN)  fastfetch installed to $(BIN)$(RESET)"
 
 # ── Rust / Cargo ────────────────────────────────────────────
 cargo:
@@ -107,23 +103,19 @@ cargo:
 	fi
 
 # ── myx (via cargo) ─────────────────────────────────────────
-myx:
-	@echo "$(YELLOW)→ Checking myx...$(RESET)"
-	@if which myx > /dev/null 2>&1; then \
-		echo "$(GREEN)  myx found: $$(which myx)$(RESET)"; \
-	else \
-		. $(HOME)/.cargo/env 2>/dev/null && cargo install myx && echo "$(GREEN)  myx ready$(RESET)" || \
-		echo "$(YELLOW)  myx install skipped$(RESET)"; \
-	fi
+myx: cargo
+	@echo "$(YELLOW)→ Installing myx...$(RESET)"
+	@rm -f $(HOME)/.cargo/bin/myx
+	@. $(HOME)/.cargo/env && cargo install myx
+	@echo "$(GREEN)  myx ready$(RESET)"
 
 # ── opencode ────────────────────────────────────────────────
 opencode:
-	@echo "$(YELLOW)→ Checking opencode...$(RESET)"
-	@test -x $(HOME)/.opencode/bin/opencode && echo "$(GREEN)  opencode already installed$(RESET)" || \
-		(mkdir -p $(HOME)/.opencode/bin && \
-		curl -fsSL https://opencode.ai/install.sh | bash -s -- --dir $(HOME)/.opencode/bin 2>/dev/null && \
-		echo "$(GREEN)  opencode ready$(RESET)") || \
-		echo "$(YELLOW)  opencode install skipped$(RESET)"
+	@echo "$(YELLOW)→ Installing opencode...$(RESET)"
+	@rm -rf $(HOME)/.opencode/bin/opencode
+	@mkdir -p $(HOME)/.opencode/bin
+	@curl -fsSL https://opencode.ai/install.sh | bash -s -- --dir $(HOME)/.opencode/bin
+	@echo "$(GREEN)  opencode ready$(RESET)"
 
 # ── Symlink dotfiles ────────────────────────────────────────
 link:
