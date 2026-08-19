@@ -18,6 +18,7 @@
     },
 
     "modules": [
+        { "type": "command", "key": " ", "text": "bash ~/dotfiles/fastfetch/bible-verse.sh" },
         "break",
         {
             "type": "title"
@@ -68,7 +69,6 @@
                 "#e8e4dd",  // cream
                 "#e8e4dd"   // cream
             ]
-        },
-        { "type": "command", "key": "", "text": "bash ~/dotfiles/fastfetch/bible-verse.sh" }
+        }
     ]
 }
