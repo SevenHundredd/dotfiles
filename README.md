@@ -41,7 +41,11 @@ cd ~/dotfiles
 make
 ```
 
-Everything installs to `~/.local`, `~/.cargo`, or `~/.oh-my-zsh`. No root needed.
+Everything installs to `~/.local`, `~/.cargo` (symlinked to `/goinfre/sterandr/`), or `~/.oh-my-zsh`. No root needed.
+
+## Goinfre
+
+Cargo and rustup live in `/goinfre/sterandr/` with symlinks in `~`. This preserves home quota. When goinfre wipes, run `make cargo myx` to reinstall.
 
 ## Structure
 
@@ -56,6 +60,9 @@ dotfiles/
 ├── myx/config.toml             # spotify TUI
 ├── opencode/opencode.jsonc     # opencode config
 └── Makefile                    # install everything
+
+~/.cargo → /goinfre/sterandr/.cargo (symlinked by Makefile)
+~/.rustup → /goinfre/sterandr/.rustup (symlinked by Makefile)
 ```
 
 ## Makefile targets
@@ -69,7 +76,7 @@ make p10k      # install Powerlevel10k
 make tmux      # build tmux from source
 make tpm       # install tmux plugin manager
 make fastfetch # download fastfetch binary
-make cargo     # install Rust toolchain
+make cargo     # install Rust toolchain (moves to goinfre)
 make myx       # install myx via cargo
 make opencode  # install opencode
 make link      # symlink configs to ~

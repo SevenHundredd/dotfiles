@@ -99,7 +99,16 @@ cargo:
 	else \
 		echo "$(YELLOW)  Installing Rust via rustup...$(RESET)"; \
 		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path; \
-		echo "$(GREEN)  Rust installed — run '$(HOME)/.cargo/env' or restart shell$(RESET)"; \
+		echo "$(GREEN)  Rust installed$(RESET)"; \
+	fi
+	@if [ ! -L $(HOME)/.cargo ] && [ -d $(HOME)/.cargo ]; then \
+		echo "$(YELLOW)  Moving cargo/rustup to goinfre...$(RESET)"; \
+		mkdir -p /goinfre/sterandr; \
+		mv $(HOME)/.cargo /goinfre/sterandr/; \
+		mv $(HOME)/.rustup /goinfre/sterandr/; \
+		ln -s /goinfre/sterandr/.cargo $(HOME)/.cargo; \
+		ln -s /goinfre/sterandr/.rustup $(HOME)/.rustup; \
+		echo "$(GREEN)  Moved to goinfre with symlinks$(RESET)"; \
 	fi
 
 # ── myx (via cargo) ─────────────────────────────────────────
