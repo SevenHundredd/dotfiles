@@ -115,15 +115,21 @@ cargo:
 myx: cargo
 	@echo "$(YELLOW)→ Installing myx...$(RESET)"
 	@rm -f $(HOME)/.cargo/bin/myx
-	@. $(HOME)/.cargo/env && cargo install myx
+	@if [ -f $(HOME)/.cargo/env ]; then \
+		. $(HOME)/.cargo/env && cargo install myx; \
+	elif command -v cargo > /dev/null 2>&1; then \
+		cargo install myx; \
+	else \
+		echo "$(YELLOW)  cargo not found — run 'source ~/.cargo/env' or restart shell$(RESET)"; \
+		exit 1; \
+	fi
 	@echo "$(GREEN)  myx ready$(RESET)"
 
 # ── opencode ────────────────────────────────────────────────
 opencode:
 	@echo "$(YELLOW)→ Installing opencode...$(RESET)"
 	@rm -rf $(HOME)/.opencode/bin/opencode
-	@mkdir -p $(HOME)/.opencode/bin
-	@curl -fsSL https://opencode.ai/install.sh | bash -s -- --dir $(HOME)/.opencode/bin
+	@curl -fsSL https://opencode.ai/install | bash
 	@echo "$(GREEN)  opencode ready$(RESET)"
 
 # ── Symlink dotfiles ────────────────────────────────────────
