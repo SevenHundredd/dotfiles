@@ -69,7 +69,6 @@
                 "#e8e4dd"   // cream
             ]
         },
-        "break",
         { "type": "command", "key": " ", "text": "bash ~/dotfiles/fastfetch/bible-verse.sh" }
     ]
 }
