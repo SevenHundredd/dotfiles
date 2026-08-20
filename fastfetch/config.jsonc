@@ -28,7 +28,7 @@
         { "type": "cpu",    "key": "\u001b[38;2;214;214;212m\u251c \uf2db  CPU\u001b[0m" },
         { "type": "gpu",    "key": "\u001b[38;2;214;214;212m\u251c \uf108  GPU\u001b[0m" },
         { "type": "memory", "key": "\u001b[38;2;214;214;212m\u251c \uf1c0  RAM\u001b[0m" },
-        { "type": "disk", "folders": "/home/sterandr", "key": "\u001b[38;2;214;214;212m\u2514 \uf0a0  Disk\u001b[0m" },
+        { "type": "command", "key": "\u001b[38;2;214;214;212m\u2514 \uf0a0  Disk\u001b[0m", "text": "df -h $HOME | tail -1 | awk '{printf \"%s / %s (%s)\", $3, $2, $5}'" },
         "break",
 
         { "type": "custom", "format": "\u001b[38;2;179;156;137m\u2500\u2500\u2500\u2500\u2500 Software \u2500\u2500\u2500\u2500\u2500\u001b[0m" },
