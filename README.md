@@ -130,6 +130,8 @@ pkg-config libssl-dev libasound2-dev
 
 If missing, `make` prompts to install them. On systems without sudo, myx is skipped — everything else still works.
 
+**Setup:** Get your Spotify client ID at https://developer.spotify.com/dashboard, then edit `myx/config.toml` and uncomment the `client_id` line with your ID. myx will ask for your email on first launch.
+
 ### Opencode
 
 AI coding agent. Installed to `~/.opencode/bin`.

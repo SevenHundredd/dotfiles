@@ -4,7 +4,8 @@
 #scrolloff = 3
 
 # Spotify app client id. MYX_CLIENT_ID overrides this if it is set.
-client_id = "76d694947868452eada0a4439afb7360"
+# Get yours at https://developer.spotify.com/dashboard
+#client_id = "your-client-id-here"
 
 # Terminal graphics protocol: kitty, iterm2, sixel or halfblocks.
 # Leave it commented to auto-detect; set it if album art comes out as a coarse
